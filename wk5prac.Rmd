@@ -4,18 +4,49 @@ output: html_document
 date: "2022-11-02"
 ---
 
+GOAL: join polygons of boroughs with number of hotels and airbnbs and hotels
+
+##ONE: Load Libraries and Data
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(sf)
+library(tmap)
+library(tmaptools)
+library(tidyverse)
+library(here)
+library(leafpop)
+library(leaflet)
+library(grid)
+library(readr)
+library(janitor)
+library(dplyr)
+
+airbnb <- read_csv(here("wk5_data","listings.csv"), locale = locale(encoding = "latin1"),
+                       na = "NA")
+
+Londonborough <- st_read(here::here("wk5_data","statistical-gis-boundaries-london", "ESRI", "London_Borough_Excluding_MHW.shp")) %>%
+  st_transform(., 27700)
+
+OSM <- st_read(here::here("wk5_data","greater-london-latest-free.shp", "gis_osm_pois_a_free_1.shp")) %>% 
+  st_transform(.,27700) %>% 
+  filter(fclass=='hotel')
+
+Worldcities <- st_read(here::here("wk5_data", "World_Cities", "World_Cities.shp")) %>%
+  st_transform(., 27700)
+
+UK_outline <- st_read(here::here("wk5_data", "gadm36_GBR_shp", "gadm36_GBR_0.shp")) %>%
+  st_transform(., 27700)
+
 ```
 
 ## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Manipulate and Join Data
+1. Spatial Join using st_join()
 
 ```{r cars}
-summary(cars)
+
+join_example <- st_join(Londonborough, OSM)
+
 ```
 
 ## Including Plots
